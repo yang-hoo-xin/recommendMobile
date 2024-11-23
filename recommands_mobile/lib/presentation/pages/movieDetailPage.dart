@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class MovieDetailPage extends StatelessWidget {
+class MovieDetailsPage extends StatelessWidget {
   final String title;
   final String posterUrl;
   final String genre;
@@ -8,8 +8,10 @@ class MovieDetailPage extends StatelessWidget {
   final double rating;
   final String plotSummary;
   final List<String> cast;
+  final Color themeColor;
 
-  MovieDetailPage({
+  const MovieDetailsPage({
+    Key? key,
     required this.title,
     required this.posterUrl,
     required this.genre,
@@ -17,95 +19,115 @@ class MovieDetailPage extends StatelessWidget {
     required this.rating,
     required this.plotSummary,
     required this.cast,
-  });
+    required this.themeColor,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: themeColor.withOpacity(0.1),
       appBar: AppBar(
         title: Text(title),
+        backgroundColor: themeColor,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: () {
+              Navigator.pushReplacementNamed(context, '/');
+            },
+          ),
+        ],
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Movie Poster
-              Center(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10.0),
-                  child: Image.network(
-                    posterUrl,
-                    height: 300,
-                    fit: BoxFit.cover,
-                  ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: ListView(
+          children: [
+            // Movie Poster
+            Container(
+              height: 200,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                image: DecorationImage(
+                  image: NetworkImage(posterUrl),
+                  fit: BoxFit.cover,
                 ),
+                borderRadius: BorderRadius.circular(10.0),
               ),
-              SizedBox(height: 16),
-              // Movie Title
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
+            ),
+            SizedBox(height: 20),
+            // Movie Title
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: themeColor, // 动态设置字体颜色
               ),
-              SizedBox(height: 8),
-              // Genre and Release Date
-              Text(
-                '$genre | Released: $releaseDate',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey,
-                ),
-              ),
-              SizedBox(height: 8),
-              // Rating
-              Row(
-                children: [
-                  Icon(Icons.star, color: Colors.amber, size: 20),
-                  SizedBox(width: 5),
-                  Text(
-                    '$rating/10',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 16),
-              // Plot Summary
-              Text(
+            ),
+            SizedBox(height: 10),
+            // Release Date, Genre, and Duration
+            Text("Release Date: $releaseDate", style: TextStyle(color: Colors.white,fontSize: 16)),
+            Text("Genre: $genre", style: TextStyle(color: Colors.white,fontSize: 16)),
+            Text("Rating: ${rating.toString()}/10", style: TextStyle(color: Colors.white,fontSize: 16)),
+            Divider(thickness: 1, height: 20),
+            // Plot Summary Section
+            ExpansionTile(
+              title: Text(
                 "Plot Summary",
                 style: TextStyle(
-                  fontSize: 18,
+                  color: themeColor, // 动态设置标题颜色
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 8),
-              Text(
-                plotSummary,
-                style: TextStyle(fontSize: 16),
-              ),
-              SizedBox(height: 16),
-              // Cast
-              Text(
-                "Cast",
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Text(
+                    plotSummary,
+                    style: TextStyle(fontSize: 14),
+                  ),
+                ),
+              ],
+            ),
+            // Cast Section
+            ExpansionTile(
+              title: Text(
+                "Cast & Crew",
                 style: TextStyle(
-                  fontSize: 18,
+                  color: themeColor,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 8),
-              // Display cast members in a vertical list
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: cast.map((actor) => Text(actor)).toList(),
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: cast.map((actor) => Text(actor)).toList(),
+                  ),
+                ),
+              ],
+            ),
+            // Ratings & Reviews Section
+            ExpansionTile(
+              title: Text(
+                "Ratings & Reviews",
+                style: TextStyle(
+                  color: themeColor,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ],
-          ),
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Text(
+                    "Rating: $rating/5\nReviews: Great movie with amazing action scenes!",
+                    style: TextStyle(fontSize: 14),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
